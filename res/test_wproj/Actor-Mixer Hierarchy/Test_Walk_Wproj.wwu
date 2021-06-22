@@ -100,6 +100,14 @@
 					</ChildrenList>
 				</ActorMixer>
 				<ActorMixer Name="AM_02" ID="{A25BB40D-EC3F-47CE-8CD5-175D1D48A1AC}" ShortID="761586642">
+					<Comment>@wh_ignore</Comment>
+					<PropertyList>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>-2</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
 					<ReferenceList>
 						<Reference Name="Conversion">
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3D9E7B5E-EC1A-4FE9-9295-440D09FD8C36}"/>
