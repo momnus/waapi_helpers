@@ -14,6 +14,7 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="Empty_Event" ID="{CEE67390-FAE5-455B-9430-7AA7CF2CD2FF}"/>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>
