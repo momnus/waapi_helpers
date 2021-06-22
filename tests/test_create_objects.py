@@ -18,8 +18,7 @@ class CreateObjectsTestCase(WaapiTestCase):
 
         self.folder_guid, self.folder_name = get_object(
             self.client,
-            by_guid=None,
-            by_path=f'\\Actor-Mixer Hierarchy\\Test_Create_Objects\\{self.EXISTING_FOLDER_NAME}',
+            f'\\Actor-Mixer Hierarchy\\Test_Create_Objects\\{self.EXISTING_FOLDER_NAME}',
             properties=['id', 'name']
         )
         self.assertIsNotNone(self.folder_guid)

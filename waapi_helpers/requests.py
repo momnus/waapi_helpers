@@ -49,19 +49,20 @@ def _get_filename(path: str) -> str:
 # ------------------------------------------
 
 def get_object(client: _w.WaapiClient,
-               by_guid: _t.Optional[str],
-               by_path: _t.Optional[str] = None,
+               guid_or_path: str,
                properties: _t.Sequence[str] = None) -> _GetObjectReturn:
     if properties is None:
         properties = ['id']
 
     assert _check_client(client)
     assert _check_properties(properties)
-    assert by_guid is not None or by_path is not None
+    assert guid_or_path is not None
 
-    ret = client.call(_c.core_object_get,
-                      {'from': {'id': [by_guid]} if by_guid is not None else {'path': [by_path]}},
-                      options={'return': properties})
+    is_path = guid_or_path.startswith('\\')
+    from_key = 'path' if is_path else 'id'
+    query = {'from': {from_key: [guid_or_path]}}
+
+    ret = client.call(_c.core_object_get, query, options={'return': properties})
 
     if _check_get_ret(ret):
         obj = ret['return'][0]
@@ -72,22 +73,22 @@ def get_object(client: _w.WaapiClient,
 
 
 def get_name_of_guid(client: _w.WaapiClient, guid: str) -> str:
-    value, = get_object(client, guid, None, ['name'])
+    value, = get_object(client, guid, ['name'])
     return value if value is not None else ''
 
 
 def get_path_of_guid(client: _w.WaapiClient, guid: str) -> str:
-    value, = get_object(client, guid, None, ['path'])
+    value, = get_object(client, guid, ['path'])
     return value if value is not None else ''
 
 
 def get_guid_of_path(client: _w.WaapiClient, path: str) -> str:
-    value, = get_object(client, None, path, ['id'])
+    value, = get_object(client, path, ['id'])
     return value if value is not None else ''
 
 
 def get_name_of_path(client: _w.WaapiClient, path: str) -> str:
-    value, = get_object(client, None, path, ['name'])
+    value, = get_object(client, path, ['name'])
     return value if value is not None else ''
 
 
