@@ -10,5 +10,5 @@ A small utility function library for working with Wwise Authoring API
 The library can be installed with PIP:
 
 ```
-pip install -U git+https://github.com/ech2/wwise_helpers.git
+pip install -U git+https://github.com/ech2/waapi_helpers.git
 ```
