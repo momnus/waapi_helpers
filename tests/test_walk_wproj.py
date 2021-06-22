@@ -1,6 +1,6 @@
 from waapi_helpers import get_object, get_guid_of_path, walk_wproj, get_bus_guid_from_name
 
-from .util import WaapiTestCase
+from tests.util import WaapiTestCase
 
 
 class WprojWalkTestCase(WaapiTestCase):

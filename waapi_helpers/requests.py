@@ -118,7 +118,7 @@ def get_property_value(client: _w.WaapiClient,
 
 def get_bus_guid_from_name(client: _w.WaapiClient,
                            bus_name: str) -> _t.Optional[str]:
-    for guid, name in walk_wproj(client, '\\Master-Mixer Hierarachy', ['id', 'name'], ['Bus']):
+    for guid, name in walk_wproj(client, '\\Master-Mixer Hierarchy', ['id', 'name'], ['Bus']):
         if name == bus_name:
             return guid
     return None
@@ -137,9 +137,9 @@ def set_property_value(client: _w.WaapiClient,
 
 # ------------------------------------------
 
-def _walk_depth_first(client, guid, props, ret_props, types):
+def _walk_depth_first(client, start, props, ret_props, types):
     query = {
-        'from': {'id': [guid]},
+        'from': {'path': [start]} if start.startswith('\\') else {'id': [start]},
         'transform': [{'select': ['children']}]
     }
 
@@ -154,14 +154,14 @@ def _walk_depth_first(client, guid, props, ret_props, types):
 
 
 def walk_wproj(client: _w.WaapiClient,
-               start_guid: _t.Optional[str],
+               start_guid_or_path: _t.Optional[str],
                properties: _t.Sequence[str] = None,
                types: _t.Union[_t.Sequence[str], _t.Literal['any']] = 'any') -> _t.Iterator[_t.Tuple[_WaapiValue]]:
     if properties is None:
         properties = ['id']
 
     assert _check_client(client)
-    assert start_guid is not None
+    assert start_guid_or_path is not None
     assert _check_properties(properties)
 
     ret_props = properties.copy()
@@ -169,7 +169,7 @@ def walk_wproj(client: _w.WaapiClient,
         if p not in properties:
             properties.append(p)
 
-    yield from _walk_depth_first(client, start_guid, properties, ret_props, types)
+    yield from _walk_depth_first(client, start_guid_or_path, properties, ret_props, types)
 
 
 # ------------------------------------------

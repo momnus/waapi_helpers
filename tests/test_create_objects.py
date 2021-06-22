@@ -1,8 +1,9 @@
-from tests.util import WaapiTestCase
 from waapi_helpers import (
     get_guid_of_path, get_object, create_objects, walk_wproj,
     begin_undo_group, end_undo_group, perform_undo, cancel_undo_group, create_bank, get_bank_inclusions_guids
 )
+
+from tests.util import WaapiTestCase
 
 
 class CreateObjectsTestCase(WaapiTestCase):
