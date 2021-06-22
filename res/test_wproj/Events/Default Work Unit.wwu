@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{B7B9B01E-AF56-44E5-8C01-222948E2C6B7}" SchemaVersion="97">
 	<Events>
-		<WorkUnit Name="Default Work Unit" ID="{B7B9B01E-AF56-44E5-8C01-222948E2C6B7}" PersistMode="Standalone"/>
+		<WorkUnit Name="Default Work Unit" ID="{B7B9B01E-AF56-44E5-8C01-222948E2C6B7}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Event_With_Invalid_Action" ID="{A030C2A2-48A8-4FD5-A73B-BFB27BAB387C}">
+					<ChildrenList>
+						<Action Name="" ID="{02B8A72F-D368-43EA-847B-9D6B98DE35E6}" ShortID="28709721">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="New Sound SFX" ID="{7B44F9FA-5591-4B7C-92AC-BF25B4C04AEE}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
 	</Events>
 </WwiseDocument>
