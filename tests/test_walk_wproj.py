@@ -1,4 +1,4 @@
-from waapi_helpers import get_object, get_guid_of_path, walk_wproj, get_bus_guid_from_name
+from waapi_helpers import *
 
 from tests.util import WaapiTestCase
 
@@ -80,3 +80,17 @@ class WprojWalkTestCase(WaapiTestCase):
         self.assertIsNotNone(guid)
         self.assertTrue(isinstance(guid, str))
         self.assertTrue(guid != '')
+
+    def test__get_object__with_non_seq_args(self):
+        wwu_type, = get_object(self.client, self.wwu_guid, 'type')
+        self.assertEqual(wwu_type, 'WorkUnit')
+        wwu_name, = get_object(self.client, self.wwu_guid, 'name')
+        self.assertEqual(wwu_name, 'Test_Walk_Wproj')
+
+    def test__get_object_specializations(self):
+        name = get_name_of_path(self.client, '\\Actor-Mixer Hierarchy\\Default Work Unit')
+        self.assertEqual(name, 'Default Work Unit')
+        name = get_name_of_path(self.client, '\\Actor-Mixer Hierarchy\\Default Work Unit OOPS')
+        self.assertIsNone(name)
+        name = get_name_of_guid(self.client, self.wwu_guid)
+        self.assertEqual(name, 'Test_Walk_Wproj')

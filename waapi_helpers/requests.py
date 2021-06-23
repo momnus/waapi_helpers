@@ -10,18 +10,14 @@ _OnNameConflict3 = _t.Union[_t.Literal['rename'], _t.Literal['replace'], _t.Lite
 _OnNameConflict4 = _t.Union[_t.Literal['rename'], _t.Literal['replace'], _t.Literal['fail'], _t.Literal['merge']]
 _InclusionOperation = _t.Union[_t.Literal['add'], _t.Literal['remove'], _t.Literal['replace']]
 _ImportOperation = _t.Union[_t.Literal['createNew'], _t.Literal['useExisting'], _t.Literal['replaceExisting']]
-_WaapiValue = _t.Any  # TODO: specify typing
-_GetObjectReturn = _t.Tuple[_WaapiValue, ...]
+_WaapiValue = _t.Union[float, str, dict]
+_GetObjectReturn = _t.Union[_t.Optional[_WaapiValue], _t.Tuple[_t.Optional[_WaapiValue], ...]]
 _CreateObjectsMethod = _t.Union[_t.Literal['wide'], _t.Literal['deep']]
 _StrOrSeqOfStr = _t.Union[str, _t.Sequence[str]]
 
 
 def _check_client(client: _w.WaapiClient) -> bool:
     return client is not None and client.is_connected()
-
-
-def _check_properties(properties: _t.Sequence[str]) -> bool:
-    return properties is not None and isinstance(properties, list)
 
 
 def _check_fields(obj: dict, *fields: str) -> bool:
@@ -72,45 +68,46 @@ def _is_any_val_none(*args):
 
 def get_object(client: _w.WaapiClient,
                guid_or_path: str,
-               properties: _t.Sequence[str] = None) -> _GetObjectReturn:
+               properties: _StrOrSeqOfStr = None) -> _GetObjectReturn:
     if properties is None:
         properties = ['id']
 
     assert _check_client(client)
-    assert _check_properties(properties)
     assert guid_or_path is not None
+
+    props = _ensure_str_list(properties)
 
     is_path = guid_or_path.startswith('\\')
     from_key = 'path' if is_path else 'id'
     query = {'from': {from_key: [guid_or_path]}}
 
-    ret = client.call(_c.core_object_get, query, options={'return': properties})
+    ret = client.call(_c.core_object_get, query, options={'return': props})
 
     if _check_get_ret(ret):
         obj = ret['return'][0]
-        return tuple(obj.get(p, None) for p in properties)
+        return tuple(obj.get(p, None) for p in props)
     else:
-        return tuple(None for _ in properties)
+        return tuple(None for _ in props)
 
 
 def get_name_of_guid(client: _w.WaapiClient, guid: str) -> _t.Optional[str]:
     value, = get_object(client, guid, ['name'])
-    return value if value is not None else None
+    return value
 
 
 def get_path_of_guid(client: _w.WaapiClient, guid: str) -> _t.Optional[str]:
     value, = get_object(client, guid, ['path'])
-    return value if value is not None else None
+    return value
 
 
 def get_guid_of_path(client: _w.WaapiClient, path: str) -> _t.Optional[str]:
     value, = get_object(client, path, ['id'])
-    return value if value is not None else None
+    return value
 
 
 def get_name_of_path(client: _w.WaapiClient, path: str) -> _t.Optional[str]:
     value, = get_object(client, path, ['name'])
-    return value if value is not None else None
+    return value
 
 
 def get_parent_guid(client: _w.WaapiClient, obj_guid) -> _t.Optional[str]:
