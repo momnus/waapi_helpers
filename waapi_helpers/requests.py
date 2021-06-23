@@ -413,4 +413,4 @@ def set_waapi_log_level(level: int):
 def suppress_waapi_logs(with_level: int = 1000) -> int:
     old_level = get_waapi_log_level()
     set_waapi_log_level(with_level)
-    return old_level,
+    return old_level
