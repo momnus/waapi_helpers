@@ -61,6 +61,11 @@ class CreateObjectsTestCase(WaapiTestCase):
         for name, in walk_wproj(self.client, self.folder_guid, properties=['name']):
             self.assertIn(name, names)
 
+    def test__create_objects__non_seq_args(self):
+        guid, = create_objects(self.client, self.wwu_guid, 'Temp_Folder', 'Folder')
+        self.assertTrue(isinstance(guid, str))
+        self.assertNotEqual(guid, '')
+
     def test__create_bank__include_existing_folder(self):
         banks_parent = get_guid_of_path(self.client, '\\SoundBanks\\Default Work Unit')
         bank_guid = create_bank(self.client, banks_parent, 'Test_Bank', [self.folder_guid])
@@ -69,5 +74,3 @@ class CreateObjectsTestCase(WaapiTestCase):
         incl_guids = get_bank_inclusions_guids(self.client, bank_guid)
         self.assertEqual(len(incl_guids), 1)
         self.assertEqual(incl_guids[0], self.folder_guid)
-
-

@@ -244,27 +244,26 @@ def _create_objects__wide(client, parent, names, types, on_name_conflict):
 
 
 def create_objects(client: _w.WaapiClient,
-                   parent_guid_or_path: _t.Optional[str],
+                   parent_guid_or_path: str,
                    names: _t.Sequence[str],
                    types: _t.Sequence[str],
                    method: _CreateObjectsMethod = 'wide',
                    on_name_conflict: _OnNameConflict4 = 'merge') -> _t.Sequence[_t.Optional[str]]:
-    if names is None or types is None:
-        return []
-
     assert _check_client(client)
-    assert parent_guid_or_path
-    assert len(names) == len(types)
+
+    req_names = _ensure_str_list(names)
+    req_types = _ensure_str_list(types)
+    assert len(req_names) == len(req_types)
 
     if len(names) == 0:
         return []
 
     if method == 'wide':
-        return _create_objects__wide(client, parent_guid_or_path, names, types, on_name_conflict)
+        return _create_objects__wide(client, parent_guid_or_path, req_names, req_types, on_name_conflict)
     elif method == 'deep':
-        return _create_objects__deep(client, parent_guid_or_path, names, types, on_name_conflict)
+        return _create_objects__deep(client, parent_guid_or_path, req_names, req_types, on_name_conflict)
     else:
-        assert False, "create_objects method be either 'wide' or 'deep'"
+        raise ValueError("create_objects method be either 'wide' or 'deep'")
 
 
 def create_bank(client: _w.WaapiClient,
