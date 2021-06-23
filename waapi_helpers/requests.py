@@ -398,3 +398,19 @@ def cancel_undo_group(client: _w.WaapiClient):
 
 def perform_undo(client: _w.WaapiClient):
     client.call(_c.ui_commands_execute, {'command': 'Undo'})
+
+
+# ------------------------------------------
+
+def get_waapi_log_level():
+    return _w.WampClientAutobahn.logger.getEffectiveLevel()
+
+
+def set_waapi_log_level(level: int):
+    return _w.WampClientAutobahn.logger.setLevel(level)
+
+
+def suppress_waapi_logs(with_level: int = 1000) -> int:
+    old_level = get_waapi_log_level()
+    set_waapi_log_level(with_level)
+    return old_level,
