@@ -88,39 +88,41 @@ def get_object(client: _w.WaapiClient,
 
     if _check_get_ret(ret):
         obj = ret['return'][0]
-        return tuple(obj.get(p, None) if p in obj else None
-                     for p in properties)
+        return tuple(obj.get(p, None) for p in properties)
     else:
         return tuple(None for _ in properties)
 
 
-def get_name_of_guid(client: _w.WaapiClient, guid: str) -> str:
+def get_name_of_guid(client: _w.WaapiClient, guid: str) -> _t.Optional[str]:
     value, = get_object(client, guid, ['name'])
-    return value if value is not None else ''
+    return value if value is not None else None
 
 
-def get_path_of_guid(client: _w.WaapiClient, guid: str) -> str:
+def get_path_of_guid(client: _w.WaapiClient, guid: str) -> _t.Optional[str]:
     value, = get_object(client, guid, ['path'])
-    return value if value is not None else ''
+    return value if value is not None else None
 
 
-def get_guid_of_path(client: _w.WaapiClient, path: str) -> str:
+def get_guid_of_path(client: _w.WaapiClient, path: str) -> _t.Optional[str]:
     value, = get_object(client, path, ['id'])
-    return value if value is not None else ''
+    return value if value is not None else None
 
 
-def get_name_of_path(client: _w.WaapiClient, path: str) -> str:
+def get_name_of_path(client: _w.WaapiClient, path: str) -> _t.Optional[str]:
     value, = get_object(client, path, ['name'])
-    return value if value is not None else ''
+    return value if value is not None else None
 
 
-def get_parent_guid(client: _w.WaapiClient, obj_guid) -> str:
+def get_parent_guid(client: _w.WaapiClient, obj_guid) -> _t.Optional[str]:
     query = {
         'from': {'id': [obj_guid]},
         'transform': [{'select': ['parent']}]
     }
     ret = client.call(_c.core_object_get, query, options={'return': ['id']})
-    return ret['return'][0]['id'] if _check_get_ret(ret) else ''
+    if _check_get_ret(ret):
+        return ret['return'][0]['id']
+    else:
+        return None
 
 
 def get_property_names(client: _w.WaapiClient, obj_guid: str) -> _t.Sequence[str]:
