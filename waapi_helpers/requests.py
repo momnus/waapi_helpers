@@ -1,4 +1,5 @@
-import os.path
+import copy
+import os
 import typing as _t
 import waapi as _w
 from . import constants as _c
@@ -12,6 +13,7 @@ _ImportOperation = _t.Union[_t.Literal['createNew'], _t.Literal['useExisting'], 
 _WaapiValue = _t.Any  # TODO: specify typing
 _GetObjectReturn = _t.Tuple[_WaapiValue, ...]
 _CreateObjectsMethod = _t.Union[_t.Literal['wide'], _t.Literal['deep']]
+_StrOrSeqOfStr = _t.Union[str, _t.Sequence[str]]
 
 
 def _check_client(client: _w.WaapiClient) -> bool:
@@ -44,6 +46,26 @@ def _iter_dict_depth(d: _t.Dict[_t.Any, _t.Any], key: _t.Any) -> _t.Iterator:
 
 def _get_filename(path: str) -> str:
     return os.path.splitext(os.path.basename(path))
+
+
+def _is_seq(x):
+    return hasattr(x, '__iter__')
+
+
+def _ensure_str_list(x: _StrOrSeqOfStr, ignore=None) -> _t.List[str]:
+    if ignore is not None and x == ignore:
+        return x
+
+    if isinstance(x, str):
+        return [x]
+    elif _is_seq(x):
+        return [i for i in x]
+    else:
+        raise ValueError("Invalid type of argument 'x'")
+
+
+def _is_any_val_none(*args):
+    return not all(args)
 
 
 # ------------------------------------------
@@ -155,22 +177,28 @@ def _walk_depth_first(client, start, props, ret_props, types):
 
 
 def walk_wproj(client: _w.WaapiClient,
-               start_guid_or_path: _t.Optional[str],
+               start_guids_or_paths: _StrOrSeqOfStr,
                properties: _t.Sequence[str] = None,
                types: _t.Union[_t.Sequence[str], _t.Literal['any']] = 'any') -> _t.Iterator[_t.Tuple[_WaapiValue]]:
     if properties is None:
         properties = ['id']
 
-    assert _check_client(client)
-    assert start_guid_or_path is not None
-    assert _check_properties(properties)
+    if not _check_client(client):
+        raise ValueError('Waapi client is none or disconnected')
+    if _is_any_val_none(start_guids_or_paths, types):
+        return ValueError('start_guids_or_path and types cannot be None')
 
-    ret_props = properties.copy()
+    start_list = _ensure_str_list(start_guids_or_paths)
+    props = _ensure_str_list(properties)
+    req_types = _ensure_str_list(types, 'any')
+
+    ret_props = copy.copy(props)
     for p in 'id', 'type':
-        if p not in properties:
-            properties.append(p)
+        if p not in props:
+            props.append(p)
 
-    yield from _walk_depth_first(client, start_guid_or_path, properties, ret_props, types)
+    for start in start_list:
+        yield from _walk_depth_first(client, start, props, ret_props, req_types)
 
 
 # ------------------------------------------

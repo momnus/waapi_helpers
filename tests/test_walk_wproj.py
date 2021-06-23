@@ -60,6 +60,21 @@ class WprojWalkTestCase(WaapiTestCase):
 
         self.assertEqual(len(obj_names), 0)
 
+    def test__walk_wproj__non_seq_args__yield_correct_guids_and_names(self):
+        walked_am = False
+        for guid, in walk_wproj(self.client, self.wwu_guid, 'id', 'ActorMixer'):
+            walked_am = True
+            self.assertEqual(len(guid), 38)
+            self.assertTrue(guid.startswith('{'))
+            self.assertTrue(guid.endswith('}'))
+        self.assertTrue(walked_am)
+
+        walked_rnd_cont = False
+        for name, in walk_wproj(self.client, self.wwu_guid, 'name', 'RandomSequenceContainer'):
+            walked_rnd_cont = True
+            self.assertTrue(name.startswith('RND_'))
+        self.assertTrue(walked_rnd_cont)
+
     def test__get_bus_guid_from_name__master_audio_bus(self):
         guid = get_bus_guid_from_name(self.client, 'Master Audio Bus')
         self.assertIsNotNone(guid)
