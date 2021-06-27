@@ -1,9 +1,9 @@
+from tests.util import WaapiTestCase
 from waapi_helpers import (
     get_guid_of_path, get_object, create_objects, walk_wproj,
-    begin_undo_group, end_undo_group, perform_undo, cancel_undo_group, create_bank, get_bank_inclusions_guids
+    begin_undo_group, end_undo_group, perform_undo, get_bank_inclusions_guids,
+    set_bank_inclusions
 )
-
-from tests.util import WaapiTestCase
 
 
 class CreateObjectsTestCase(WaapiTestCase):
@@ -68,8 +68,10 @@ class CreateObjectsTestCase(WaapiTestCase):
 
     def test__create_bank__include_existing_folder(self):
         banks_parent = get_guid_of_path(self.client, '\\SoundBanks\\Default Work Unit')
-        bank_guid = create_bank(self.client, banks_parent, 'Test_Bank', [self.folder_guid])
+        bank_guids = create_objects(self.client, banks_parent, ['Test_Bank'], ['SoundBank'])
+        bank_guid = bank_guids[0]
         self.assertIsNotNone(bank_guid)
+        set_bank_inclusions(self.client, bank_guid, [self.folder_guid])
 
         incl_guids = get_bank_inclusions_guids(self.client, bank_guid)
         self.assertEqual(len(incl_guids), 1)
